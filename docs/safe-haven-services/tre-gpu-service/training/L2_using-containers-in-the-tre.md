@@ -36,12 +36,12 @@ podman images
 ```
 
 Example output:
+
 ```text
 REPOSITORY                                           TAG               IMAGE ID      CREATED      SIZE
 ghcr.io/<github_user>/cuda-sample                      nbody-cuda11.7.1  06d607b1fa6f  2 years ago  324 MB
 tre-ghcr-proxy.nsh.loc:5000/<github_user>/cuda-sample  nbody-cuda11.7.1  06d607b1fa6f  2 years ago  324 MB
 ```
-
 
 ### Job Definition in TRE GPU
 
@@ -50,5 +50,6 @@ In your TRE GPU Job definition, you must use the local proxy registry path in th
 ```yaml
 image: tre-ghcr-proxy.nsh.loc:5000/<github_user>/cuda-sample:nbody-cuda11.7.1
 ```
+
 !!! warning "Only use local registry path"
     This is required because GPU nodes only have access to the local `tre-ghcr-proxy.nsh.loc` registry (not the public internet).

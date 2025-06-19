@@ -12,7 +12,7 @@ Default Quota:
 
 ## Kubeconfig
 
-Each project will be assigned a kubeconfig file for access to the service which will allow operation in the assigned namespace and access to exposed service operators, for example the GPU and CephRBD operators.
+Each project will be assigned a kubeconfig file for access to the service which will allow operation in the assigned namespace and access to exposed service operators, for example the GPU operator.
 
 ## Kubernetes Job Names
 

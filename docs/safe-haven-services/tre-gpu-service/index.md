@@ -1,6 +1,6 @@
 # Overview
 
-The TRE GPU Service (TRE GPU Service) provides access to a range of Nvidia GPUs. The TRE GPU Service is built upon [Kubernetes](https://kubernetes.io).
+The TRE GPU Service (Trusted Research Environment GPU Service) provides access to a range of Nvidia GPUs. The TRE GPU Service is built upon [Kubernetes](https://kubernetes.io).
 
 As of May 2025, the TRE GPU Service offers full Nvidia A100 40GB GPUs only. There are no MIG (Multi-instance GPU) configurations available.
 
@@ -10,7 +10,7 @@ The full specification of the TRE GPU Service as of May 2025:
 
 - 672 CPU Cores (AMD EPYC and Intel Xeon)
 - 2.54 TiB Memory
-- BeeGFS Persistent Volumes beeGFS – up to 100TiB
+- BeeGFS Persistent Volumes using BeeGFS CSI – up to 100TiB
 - 24 Nvidia A100 40GB (Full GPU, no MIG)
 
 !!! important "Quotas"
@@ -36,7 +36,7 @@ New projects wanting to use the GPU Service should include this in their TRE Pro
 
 Each project will be given a namespace within the TRE GPU service to operate in.
 
-This namespace will normally be the TRE Project code appended with ’ns’, i.e. `tre989ns` for a project with code 'tre989'.
+This namespace will normally be the TRE Project code appended with ’ns’, i.e. `nsh2024-0000ns` for a project with code `nsh2024-0000`.
 
 Once access to the TRE GPU service has been confirmed, TRE Project VMs will be configured to use the TRE GPU cluster. - information on access to VMs is available [here](../virtual-desktop-connections.md).
 

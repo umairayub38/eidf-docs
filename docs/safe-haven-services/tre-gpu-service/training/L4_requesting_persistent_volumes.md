@@ -30,15 +30,53 @@ The following **predefined PVCs** are available in every project namespace:
 
 | BeeGFS Path                                                  | PVC Name                              | Mount in Container | Use Case                                       |
 |--------------------------------------------------------------|----------------------------------------|--------------------|------------------------------------------------|
-| `/mnt/beegfs/<project_id>/shared`                            | `pvc-<project_id>-shared`              | `/safe_data`       | Shared project data (read-only or read-write)  |
-| `/mnt/beegfs/<project_id>/users/<username>/outputs_<job_id>` | `pvc-<project_id>-users-<username>`    | `/safe_outputs`    | User output files (read-write)                |
-| `~/scratch_<job_id>`                                         | *(not a PVC; uses emptyDir)*           | `/scratch`         | Temporary scratch space (deleted after job)   |
+| `/mnt/beegfs/<safe_heaven>/<project_id>/shared`                            | `pvc-<safe_heaven>-<project_id>-shared`              | `/safe_data`       | Shared project data (read-only or read-write)  |
+| `/mnt/beegfs/<safe_heaven>/<project_id>/users/<username>` | `pvc-<safe_heaven>-<project_id>-users-<username>`    | `/safe_outputs`    | User output files (read-write)                |
+| `~/scratch`                                         | *(not a PVC; uses emptyDir)*           | `/scratch`         | Temporary scratch space (deleted after job)   |
 
 These PVCs are automatically provisioned and do not require user creation.
 
 ## Mounting BeeGFS Volumes to a Pod
 
 To use BeeGFS-based shared and output directories in a container, add `volumeMounts` and `volumes` entries to your pod/job YAML.
+You also need to ensure the container runs with the correct user and group IDs matching your TRE user identity. This is critical for BeeGFS storage permissions and volume mounts to work properly.
+
+### Security Context Explained
+
+**runAsUser:** The numeric user ID (UID) inside the container. This should match your TRE user UID.
+
+**runAsGroup:** The primary group ID (GID) inside the container. This should match your TRE user primary group.
+
+**fsGroup:** The filesystem group ID to give permissions for mounted volumes, enabling proper group access inside the container.
+
+!!! important "Why is this important?"
+    BeeGFS uses POSIX file permissions for access control. Setting these IDs ensures the container’s processes can access mounted BeeGFS directories with the correct permissions. Without this, the volumes may fail to mount or be inaccessible.
+
+### How to Find Your UID and GID on the TRE Desktop VM
+
+Open a terminal on the TRE Desktop VM and type:
+
+``` bash
+id
+```
+
+You will see output like this:
+
+``` bash
+uid=10034(<tre_username>) gid=10033(tre-users) groups=10033(tre-users),...
+```
+
+### Understanding Persistent Volume Claims (PVCs)
+
+**Shared Data PVC:**
+`claimName: "pvc-<safe_heaven>-<project_id>-shared"`
+Mounted read-only at /safe_data. Shared by all project members.
+
+**User Output PVC:**
+`claimName: "pvc-<safe_heaven>-<project_id>-<tre_username>"`
+Mounted read-write at /safe_outputs. Dedicated to the individual user identified by their FreeIPA username `<tre_username>`.
+
+Your FreeIPA username `<tre_username>` corresponds to the user you log in as on the TRE portal and Desktop VM.
 
 ### Example pod specification yaml with mounted persistent volume
 
@@ -46,7 +84,7 @@ To use BeeGFS-based shared and output directories in a container, add `volumeMou
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: beegfs-shared-output-job-
+  generateName: <safe_heaven>-<project_id>-job-
   labels:
     kueue.x-k8s.io/queue-name: <project namespace>-user-queue
 spec:
@@ -55,12 +93,25 @@ spec:
   ttlSecondsAfterFinished: 1800
   template:
     metadata:
-      name: beegfs-pod
+      name: <safe_heaven>-<project_id>-job-
     spec:
+      securityContext:
+        runAsUser: <tre_user_id>
+        runAsGroup: <tre_usergroup_id>
+        fsGroup: <tre_usergroup_id>
       containers:
-        - name: job-container
-          image: busybox
-          args: ["sleep", "infinity"]
+        - name: cudasample
+          image: tre-ghcr-proxy.nsh.loc:5003/<github_user>/cuda-sample:nbody-cuda11.7.1
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Extract job ID from pod name by removing trailing -xxxxx
+              JOB_ID=$(echo ${HOSTNAME} | sed 's/-[a-z0-9]\{5\}$//')
+              echo "Resolved JOB_ID: $JOB_ID"
+              # Make job output directory
+              mkdir -p /safe_outputs/${JOB_ID}
+              # Run CUDA sample with required arguments
+              echo "Starting CUDA sample..."
           resources:
             requests:
               cpu: 2
@@ -68,6 +119,7 @@ spec:
             limits:
               cpu: 2
               memory: "4Gi"
+              nvidia.com/gpu: 1
           volumeMounts:
             - mountPath: /safe_data
               name: shared-data
@@ -80,12 +132,13 @@ spec:
       volumes:
         - name: shared-data
           persistentVolumeClaim:
-            claimName: pvc-<project_id>-shared
+            claimName: pvc-<safe_heaven>-<project_id>-shared
         - name: user-output
           persistentVolumeClaim:
-            claimName: pvc-<project_id>-users-<username>
+            claimName: pvc-<safe_heaven>-<project_id>-<tre_username>
         - name: scratch
           emptyDir: {}
-```
-✅ **You do not need to create** the PVCs `pvc-<project_id>-shared` and `pvc-<project_id>-users-<username>`. These are already available for you in your namespace.
 
+```
+
+✅ **You do not need to create** the PVCs `pvc-<safe_heaven>-<project_id>-shared` and `pvc-<safe_heaven>-<project_id>-users-<username>`. These are already available for you in your namespace.

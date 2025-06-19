@@ -124,8 +124,6 @@ nav:
           - "Creating your first pod template within a job yaml file": safe-haven-services/tre-gpu-service/training/L2.1_creating-your-first-pod-template.md
           - "Transfer Data Inside the TRE GPU Cluster": safe-haven-services/tre-gpu-service/training/L3_Accessing_the_BeeGFS_Inside_the_EPCC_TRE.md
           - "Persistent Volumes": safe-haven-services/tre-gpu-service/training/L4_requesting_persistent_volumes.md
-          - "Running a Pytorch Pod": safe-haven-services/tre-gpu-service/training/L5_running_a_pytorch_task.md
-          - "Template K8s Workflow": safe-haven-services/tre-gpu-service/training/L6_template_workflow.md
        - "GPU Service FAQ": safe-haven-services/tre-gpu-service/faq.md
   - "EIDF Known Issues": known-issues/index.md
   - "EIDF Frequently Asked Questions": faq/index.md

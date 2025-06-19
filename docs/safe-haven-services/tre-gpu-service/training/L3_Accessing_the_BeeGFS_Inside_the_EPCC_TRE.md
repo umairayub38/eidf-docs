@@ -10,7 +10,6 @@ This approach ensures secure, performant, and flexible access to shared datasets
 
 `BeeGFS is deployed within the Trusted Research Environment (TRE). Therefore, the same restrictions apply: BeeGFS storage is fully isolated from the internet. You cannot download data directly from public sources (e.g., GitHub, external APIs), and copying, recording, or extracting any files from BeeGFS outside of the TRE is strictly prohibited unless explicitly approved through the appropriate data governance processes.`
 
-
 ## Managing Files and Data in the TRE GPU Environment
 
 The BeeGFS client is installed on the shs-gpucl-fs01 VM, which is used to synchronize data between the desktop VM environment and the BeeGFS file system.
@@ -18,18 +17,21 @@ The BeeGFS client is installed on the shs-gpucl-fs01 VM, which is used to synchr
 This setup allows users to prepare and transfer code and datasets between the project space and BeeGFS, making them accessible to GPU jobs through Kubernetes Persistent Volumes (PVs), which are directly provisioned via the BeeGFS CSI driver.
 
 ### Storage Overview
+
 There are three main file storage environments:
 
-1. **Desktop VM `/home` File System**  Accessible only when logged in via the remote desktop. Local to the VM and **not backed up.
+1. **Desktop VM `/home` File System**
+   Accessible only when logged in via the remote desktop. Local to the VM and **not backed up**.
 
-2. **TRE GPU Cluster BeeGFS** Mounted directly on GPU compute nodes using the BeeGFS CSI driver. Provides high-performance, parallel file access for compute jobs. BeeGFS data can be synchronized from the desktop VM via the `shs-gpucl-fs01` node, where the BeeGFS client is installed. Declared in Kubernetes job definitions using Persistent Volume Claims (PVCs).
+1. **TRE GPU Cluster BeeGFS**
+   Mounted directly on GPU compute nodes using the BeeGFS CSI driver. Provides high-performance, parallel file access for compute jobs. BeeGFS data can be synchronized from the desktop VM via the `shs-gpucl-fs01` node, where the BeeGFS client is installed. Declared in Kubernetes job definitions using Persistent Volume Claims (PVCs).
 
-3. **Project Data in `/safe_data`** Accessible only from the desktop VM. Backed up and used for long-term data storage. Not accessible from GPU compute nodes.
+1. **Project Data in `/safe_data`**
+   Accessible only from the desktop VM. Backed up and used for long-term data storage. Not accessible from GPU compute nodes.
    Slower I/O performance compared to BeeGFS.
 
 !!! warning "Important Note"
     The `/safe_data` file system cannot be used directly within GPU jobs. Instead, synchronize necessary data to BeeGFS volumes for compute workloads and transfer results back to `/safe_data` if long-term storage or backup is required.
-
 
 ### Accessing the BeeGFS in the TRE GPU Environment
 
@@ -61,7 +63,7 @@ The BeeGFS storage is mounted on GPU compute nodes and is **separate** from:
 
 To make files available for GPU analysis jobs, they must be **explicitly transferred** between these environments.
 
-#### Example showing separate SDF and VM file systems
+#### Example showing separate BeeGFS and VM file systems
 
 ```bash
 cd ~
@@ -101,12 +103,12 @@ Transferring and synchronising data sets between the project data space and the 
 man rsync # check instructions for using rsync
 
 # Sync project folder to BeeGFS mount point on shs-gpucl-fs01
-rsync -avP /safe_data/my_project/ shs-gpucl-fs01:/mnt/beegfs/<project_id>/shared
+rsync -avP /safe_data/my_project/ shs-gpucl-fs01:/mnt/beegfs/<safe_heaven>/<project_id>/shared
 
 # Conduct analysis on GPU cluster using Kubernetes jobs accessing /mnt/beegfs/<project_id>/
 
 # After analysis, sync results back to /safe_data (if needed)
-rsync -avP shs-gpucl-fs01:/mnt/beegfs/<project_id>/users/<username>/ /safe_data/<project_id>/results/
-
+rsync -avP shs-gpucl-fs01:/mnt/beegfs/<safe_heaven>/<project_id>/users/<username>/ /safe_data/<project_id>/results/
 ```
+
 *Optionally remove the project folder from BeeGFS if no longer needed.*

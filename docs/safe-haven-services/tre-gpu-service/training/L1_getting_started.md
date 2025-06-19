@@ -8,12 +8,11 @@ In order to follow this tutorial on the TRE GPU Cluster you will need to have:
 
 - An active TRE Project on the Portal with access to the TRE GPU Service.
 
-- The TRE GPU Service kubernetes namespace associated with the project, e.g. tre001ns.
+- The TRE GPU Service kubernetes namespace associated with the project, e.g. nsh2024-0000ns.
 
-- The TRE GPU Service queue name associated with the project, e.g. tre001ns-user-queue.
+- The TRE GPU Service queue name associated with the project, e.g. nsh2024-0000ns-user-queue.
 
 - The TRE user is configured to use the TRE GPU service from Project VM along with the kubectl command line tool to interact with the K8s API.
-
 
 ## Introduction
 
@@ -74,4 +73,3 @@ Useful commands are:
 - `kubectl -n <project-namespace> get jobs`:  List all jobs the namespace has active (or pending).
 - `kubectl -n <project-namespace> describe job <job name>`: Verbose summary of the specified job.
 - `kubectl -n <project-namespace> delete job <job name>`: Delete a job from the cluster.
-
