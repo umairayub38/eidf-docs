@@ -36,7 +36,7 @@ New projects wanting to use the GPU Service should include this in their TRE Pro
 
 Each project will be given a namespace within the TRE GPU service to operate in.
 
-This namespace will normally be the TRE Project code appended with ’ns’, i.e. `nsh2024-0000ns` for a project with code `nsh2024-0000`.
+This namespace will normally be the TRE Project code appended with ’ns’, i.e. `nsh-2024-0000-ns` for a project with code `2024-0000`.
 
 Once access to the TRE GPU service has been confirmed, TRE Project VMs will be configured to use the TRE GPU cluster. - information on access to VMs is available [here](../virtual-desktop-connections.md).
 

@@ -31,7 +31,7 @@ The following **predefined PVCs** are available in every project namespace:
 | BeeGFS Path                                                  | PVC Name                              | Mount in Container | Use Case                                       |
 |--------------------------------------------------------------|----------------------------------------|--------------------|------------------------------------------------|
 | `/mnt/beegfs/<safe_heaven>/<project_id>/shared`                            | `pvc-<safe_heaven>-<project_id>-shared`              | `/safe_data`       | Shared project data (read-only or read-write)  |
-| `/mnt/beegfs/<safe_heaven>/<project_id>/users/<username>` | `pvc-<safe_heaven>-<project_id>-users-<username>`    | `/safe_outputs`    | User output files (read-write)                |
+| `/mnt/beegfs/<safe_heaven>/<project_id>/users/<username>` | `pvc-<safe_heaven>-<project_id>-users-<first part of username>`    | `/safe_outputs`    | User output files (read-write)                |
 | `~/scratch`                                         | *(not a PVC; uses emptyDir)*           | `/scratch`         | Temporary scratch space (deleted after job)   |
 
 These PVCs are automatically provisioned and do not require user creation.
@@ -73,7 +73,7 @@ uid=10034(<tre_username>) gid=10033(tre-users) groups=10033(tre-users),...
 Mounted read-only at /safe_data. Shared by all project members.
 
 **User Output PVC:**
-`claimName: "pvc-<safe_heaven>-<project_id>-<tre_username>"`
+`claimName: "pvc-<safe_heaven>-<project_id>-<first part of tre_username>"`
 Mounted read-write at /safe_outputs. Dedicated to the individual user identified by their FreeIPA username `<tre_username>`.
 
 Your FreeIPA username `<tre_username>` corresponds to the user you log in as on the TRE portal and Desktop VM.
@@ -135,7 +135,7 @@ spec:
             claimName: pvc-<safe_heaven>-<project_id>-shared
         - name: user-output
           persistentVolumeClaim:
-            claimName: pvc-<safe_heaven>-<project_id>-<tre_username>
+            claimName: pvc-<safe_heaven>-<project_id>-<first part of tre_username before '_' >
         - name: scratch
           emptyDir: {}
 
