@@ -13,7 +13,6 @@ We also that suggest:
 - you make all paths in configuration files absolute
 - you use the `--mount_dirs` and `--python_paths` options with all `cszoo` commands, see the training example below for a full command invocation.
 
-
 For completness both the modelzoo clone and virtual environmment setup are included below:
 
 ```bash
