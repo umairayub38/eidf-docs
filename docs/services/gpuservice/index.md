@@ -10,10 +10,10 @@ The current full specification of the EIDF GPU Service as of April 2025:
 - 59 TiB Memory
 - Ceph Persistent Volumes CephFS - up to 100TiB
 - Ceph Persistent Volumes RBD - up to 100TiB
-- 16 Nvidia H200 141GB
-- 136 Nvidia H100 80GB
-- 80 Nvidia A100 80GB
-- 56 Nvidia A100 40GB
+- 16 Nvidia H200 141GB in nodes with 8 GPUs each node
+- 136 Nvidia H100 80GB in nodes with 8 GPUs each node
+- 80 Nvidia A100 80GB in nodes with either 4 or 8 GPUs each node
+- 56 Nvidia A100 40GB in nodes with either 4 or 8 GPUs each node
 - 16 Nvidia MIG A100 3G.20GB
 - 56 Nvidia MIG A100 1G.5GB
 
